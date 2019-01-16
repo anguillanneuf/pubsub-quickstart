@@ -5,14 +5,15 @@ from google.cloud import pubsub_v1
 
 
 def sub(project_id, subscription_name):
-
+    """Receives messages from a Pub/Sub subscription."""
     client = pubsub_v1.SubscriberClient()
     subscription_path = client.subscription_path(
         project_id, subscription_name)
 
     def callback(message):
-        print('Received message: {}'.format(message))
-        # we must "acknowledge," otherwise they will be redelivered
+        print('Received message {} of message_id {}'.format(
+            message, message.message_id))
+        # Unacked messages will be redelivered.
         message.ack()
 
     client.subscribe(subscription_path, callback=callback)
